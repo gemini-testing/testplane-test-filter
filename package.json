@@ -1,7 +1,7 @@
 {
   "name": "hermione-test-filter",
   "version": "0.0.1",
-  "description": "plugin for running specific hermione tests",
+  "description": "plugin for filtering tests specified in json-reports",
   "main": "lib/index.js",
   "scripts": {
     "test": "mocha",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.yandex-team.ru/search-interfaces/infratest.git"
+    "url": "git://github.com/gemini-testing/hermione-test-filter.git"
   },
   "keywords": [
     "hermione",
