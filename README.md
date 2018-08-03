@@ -13,6 +13,7 @@ npm install hermione-test-filter
 * `reportsPath` **[String]** (optional, `hermione-*.json` by default) - path to reports with tests to run. It could specified as mask ot path to some file.
 
 ## Usage
+* Require plugin in your hermione config file:
 ```js
 plugins: {
     'hermione-test-filter': {
@@ -20,4 +21,13 @@ plugins: {
         reportsPath: 'some/path/*.json'
     }
 }
+```
+* Put json-reports with tests to run on your file system in such format:
+```json
+[
+    {
+        "title": "some-title",
+        "browser": "some-browser"
+    }
+]
 ```
