@@ -1,8 +1,7 @@
 'use strict';
 
 const {AsyncEmitter} = require('gemini-core').events;
-const globExtra = require('glob-extra');
-const fs = require('fs-extra');
+const fs = require('fs');
 const plugin = require('../lib');
 
 describe('test filter', () => {
@@ -35,10 +34,8 @@ describe('test filter', () => {
     };
 
     beforeEach(() => {
-        sandbox.stub(console, 'info');
+        sandbox.stub(fs, 'readFile');
         sandbox.stub(console, 'warn');
-        sandbox.stub(globExtra, 'expandPaths');
-        sandbox.stub(fs, 'readJson');
     });
 
     afterEach(() => sandbox.restore());
@@ -47,44 +44,38 @@ describe('test filter', () => {
         it('should do nothing', async () => {
             const hermione = mkHermioneStub({isWorker: true});
             sandbox.spy(hermione, 'on');
-            await initHermione(hermione, {reportsPath: 'some/path'});
+            await initHermione(hermione, {inputFile: 'some/file.json'});
 
             assert.notCalled(hermione.on);
         });
     });
 
     describe('in master process of hermione', () => {
-        it('should enable each test from reports', async () => {
-            globExtra.expandPaths.withArgs('some/path').resolves(['some/file1.json', 'other/file2.json']);
-            fs.readJson.withArgs('some/file1.json').resolves([{
-                title: 'some-title',
-                browser: 'some-browser'
-            }]);
-            fs.readJson.withArgs('other/file2.json').resolves([{
-                title: 'other-title',
-                browser: 'other-browser'
-            }]);
+        it('should enable each test from input file', async () => {
+            fs.readFile.withArgs('some/file.json').yields(null, JSON.stringify([{
+                fullTitle: 'some-title',
+                browserId: 'some-browser'
+            }]));
+
             const hermione = mkHermioneStub({isWorker: false});
-            await initHermione(hermione, {reportsPath: 'some/path'});
+            await initHermione(hermione, {inputFile: 'some/file.json'});
 
             const testCollection = mkTestCollectionStub();
             hermione.emit(hermione.events.AFTER_TESTS_READ, testCollection);
 
             assert.calledOnce(testCollection.disableAll);
-            assert.calledTwice(testCollection.enableTest);
             assert.calledWith(testCollection.enableTest, 'some-title', 'some-browser');
-            assert.calledWith(testCollection.enableTest, 'other-title', 'other-browser');
         });
 
-        it('should run all tests if reports are not found', async () => {
-            globExtra.expandPaths.withArgs('some/path').resolves([]);
-
+        it('should run all tests if input file is empty', async () => {
+            fs.readFile.yields(null, '[]');
             const hermione = mkHermioneStub({isWorker: false});
-            await initHermione(hermione, {reportsPath: 'some/path'});
+            await initHermione(hermione, {inputFile: 'some/path'});
 
             const testCollection = mkTestCollectionStub();
             hermione.emit(hermione.events.AFTER_TESTS_READ, testCollection);
 
+            assert.calledWithMatch(console.warn, 'Input file is empty. All tests will be run.');
             assert.notCalled(testCollection.disableAll);
         });
     });

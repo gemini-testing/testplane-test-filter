@@ -1,7 +1,7 @@
 {
   "name": "hermione-test-filter",
   "version": "0.1.0",
-  "description": "plugin for filtering tests specified in json-reports",
+  "description": "plugin for filtering tests specified in json-file",
   "main": "lib/index.js",
   "scripts": {
     "test": "mocha",
@@ -19,9 +19,7 @@
   "license": "MIT",
   "dependencies": {
     "bluebird": "^3.5.1",
-    "fs-extra": "^7.0.0",
     "gemini-configparser": "^1.0.0",
-    "glob-extra": "^3.0.0",
     "lodash": "^4.17.10"
   },
   "devDependencies": {
