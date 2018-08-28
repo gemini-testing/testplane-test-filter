@@ -36,6 +36,7 @@ describe('test filter', () => {
     beforeEach(() => {
         sandbox.stub(fs, 'readFile');
         sandbox.stub(console, 'warn');
+        sandbox.stub(console, 'info');
     });
 
     afterEach(() => sandbox.restore());
@@ -77,6 +78,17 @@ describe('test filter', () => {
 
             assert.calledWithMatch(console.warn, 'Input file is empty. All tests will be run.');
             assert.notCalled(testCollection.disableAll);
+        });
+
+        it('should notice that specific tests will be run', async () => {
+            fs.readFile.withArgs('some/file.json').yields(null, JSON.stringify(["some tests"]));
+
+            const hermione = mkHermioneStub({isWorker: false});
+            await initHermione(hermione, {inputFile: 'some/file.json'});
+
+            hermione.emit(hermione.events.AFTER_TESTS_READ, mkTestCollectionStub());
+
+            assert.calledWithMatch(console.info, 'Data for tests filtering found. Specific tests will be run.');
         });
     });
 });
