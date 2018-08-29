@@ -1,7 +1,7 @@
 'use strict';
 
 const {AsyncEmitter} = require('gemini-core').events;
-const fs = require('fs');
+const utils = require('../lib/utils');
 const plugin = require('../lib');
 
 describe('test filter', () => {
@@ -34,7 +34,7 @@ describe('test filter', () => {
     };
 
     beforeEach(() => {
-        sandbox.stub(fs, 'readFile');
+        sandbox.stub(utils, 'readFile');
         sandbox.stub(console, 'warn');
     });
 
@@ -52,10 +52,10 @@ describe('test filter', () => {
 
     describe('in master process of hermione', () => {
         it('should enable each test from input file', async () => {
-            fs.readFile.withArgs('some/file.json').yields(null, JSON.stringify([{
+            utils.readFile.withArgs('some/file.json').resolves([{
                 fullTitle: 'some-title',
                 browserId: 'some-browser'
-            }]));
+            }]);
 
             const hermione = mkHermioneStub({isWorker: false});
             await initHermione(hermione, {inputFile: 'some/file.json'});
@@ -68,7 +68,7 @@ describe('test filter', () => {
         });
 
         it('should run all tests if input file is empty', async () => {
-            fs.readFile.yields(null, '[]');
+            utils.readFile.resolves([]);
             const hermione = mkHermioneStub({isWorker: false});
             await initHermione(hermione, {inputFile: 'some/path'});
 
