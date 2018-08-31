@@ -75,7 +75,6 @@ describe('test filter', () => {
             const testCollection = mkTestCollectionStub();
             hermione.emit(hermione.events.AFTER_TESTS_READ, testCollection);
 
-            assert.calledWithMatch(console.warn, 'Input file is empty. All tests will be run.');
             assert.notCalled(testCollection.disableAll);
         });
     });

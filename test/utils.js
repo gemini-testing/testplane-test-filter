@@ -27,14 +27,6 @@ describe('utils', () => {
 
             assert.deepEqual(data, []);
         });
-
-        it('should warn about error while file reading', async () => {
-            fs.readFileAsync.withArgs('foo.json').rejects();
-
-            const data = await readFile('foo.json');
-
-            assert.calledWithMatch(console.warn, 'Error while reading file foo.json');
-        });
     });
 
     it('should fail if data from file can not be parsed', async () => {
