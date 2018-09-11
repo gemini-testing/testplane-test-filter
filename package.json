@@ -1,6 +1,6 @@
 {
   "name": "hermione-test-filter",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "plugin for filtering tests specified in json-file",
   "main": "lib/index.js",
   "scripts": {
