@@ -2,6 +2,7 @@
 
 const {AsyncEmitter} = require('gemini-core').events;
 const utils = require('../lib/utils');
+const helpers = require('../lib/helpers');
 const plugin = require('../lib');
 
 describe('test filter', () => {
@@ -35,6 +36,7 @@ describe('test filter', () => {
 
     beforeEach(() => {
         sandbox.stub(utils, 'readFile');
+        sandbox.stub(helpers, 'raiseUpTest');
         sandbox.stub(console, 'warn');
     });
 
@@ -51,7 +53,7 @@ describe('test filter', () => {
     });
 
     describe('in master process of hermione', () => {
-        it('should enable each test from input file', async () => {
+        it('should enable and order each test from input file', async () => {
             utils.readFile.withArgs('some/file.json').resolves([{
                 fullTitle: 'some-title',
                 browserId: 'some-browser'
@@ -64,6 +66,7 @@ describe('test filter', () => {
             hermione.emit(hermione.events.AFTER_TESTS_READ, testCollection);
 
             assert.calledOnce(testCollection.disableAll);
+            assert.calledWith(helpers.raiseUpTest, 'some-title', 'some-browser');
             assert.calledWith(testCollection.enableTest, 'some-title', 'some-browser');
         });
 
