@@ -1,14 +1,14 @@
 'use strict';
 
-const {AsyncEmitter} = require('gemini-core').events;
 const utils = require('../lib/utils');
 const plugin = require('../lib');
+const EventEmitter2 = require('eventemitter2');
 
 describe('test filter', () => {
     const sandbox = sinon.createSandbox();
 
     const mkHermioneStub = (opts = {}) => {
-        const hermione = new AsyncEmitter();
+        const hermione = new EventEmitter2();
 
         hermione.events = {
             INIT: 'init',
@@ -30,7 +30,7 @@ describe('test filter', () => {
     const initHermione = async (hermione, opts = {}) => {
         plugin(hermione, {enabled: true, ...opts});
 
-        await hermione.emitAndWait(hermione.events.INIT);
+        await hermione.emitAsync(hermione.events.INIT);
     };
 
     beforeEach(() => {
