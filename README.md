@@ -1,22 +1,22 @@
-# hermione-test-filter
+# @testplane/test-filter
 
-Plugin for [hermione](https://github.com/gemini-testing/hermione) to filter tests specified in `json`-file.
+Plugin for [Testplane](https://github.com/gemini-testing/testplane) to filter tests specified in `json`-file.
 
 ## Install
 
 ```bash
-npm install hermione-test-filter
+npm install @testplane/test-filter
 ```
 
 ## Configuration
 * `enabled` **[Boolean]** (optional, `false` by default) - enable/disable the plugin.
-* `inputFile` **[String]** (optional, `hermione-filter.json` by default) - path to file with tests to run.
+* `inputFile` **[String]** (optional, `testplane-filter.json` by default) - path to file with tests to run.
 
 ## Usage
-* Require plugin in your hermione config file:
+* Require plugin in your testplane config file:
 ```js
 plugins: {
-    'hermione-test-filter': {
+    '@testplane/test-filter': {
         enabled: true,
         inputFile: 'some/file.json'
     }

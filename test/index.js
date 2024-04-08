@@ -7,17 +7,17 @@ const EventEmitter2 = require('eventemitter2');
 describe('test filter', () => {
     const sandbox = sinon.createSandbox();
 
-    const mkHermioneStub = (opts = {}) => {
-        const hermione = new EventEmitter2();
+    const mkTestplaneStub = (opts = {}) => {
+        const testplane = new EventEmitter2();
 
-        hermione.events = {
+        testplane.events = {
             INIT: 'init',
             AFTER_TESTS_READ: 'after_tests_read'
         };
 
-        hermione.isWorker = () => opts.isWorker;
+        testplane.isWorker = () => opts.isWorker;
 
-        return hermione;
+        return testplane;
     };
 
     const mkTestCollectionStub = () => {
@@ -27,10 +27,10 @@ describe('test filter', () => {
         };
     };
 
-    const initHermione = async (hermione, opts = {}) => {
-        plugin(hermione, {enabled: true, ...opts});
+    const initTestplane = async (testplane, opts = {}) => {
+        plugin(testplane, {enabled: true, ...opts});
 
-        await hermione.emitAsync(hermione.events.INIT);
+        await testplane.emitAsync(testplane.events.INIT);
     };
 
     beforeEach(() => {
@@ -40,28 +40,28 @@ describe('test filter', () => {
 
     afterEach(() => sandbox.restore());
 
-    describe('in worker process of hermione', () => {
+    describe('in worker process of testplane', () => {
         it('should do nothing', async () => {
-            const hermione = mkHermioneStub({isWorker: true});
-            sandbox.spy(hermione, 'on');
-            await initHermione(hermione, {inputFile: 'some/file.json'});
+            const testplane = mkTestplaneStub({isWorker: true});
+            sandbox.spy(testplane, 'on');
+            await initTestplane(testplane, {inputFile: 'some/file.json'});
 
-            assert.notCalled(hermione.on);
+            assert.notCalled(testplane.on);
         });
     });
 
-    describe('in master process of hermione', () => {
+    describe('in master process of testplane', () => {
         it('should enable each test from input file', async () => {
             utils.readFile.withArgs('some/file.json').resolves([{
                 fullTitle: 'some-title',
                 browserId: 'some-browser'
             }]);
 
-            const hermione = mkHermioneStub({isWorker: false});
-            await initHermione(hermione, {inputFile: 'some/file.json'});
+            const testplane = mkTestplaneStub({isWorker: false});
+            await initTestplane(testplane, {inputFile: 'some/file.json'});
 
             const testCollection = mkTestCollectionStub();
-            hermione.emit(hermione.events.AFTER_TESTS_READ, testCollection);
+            testplane.emit(testplane.events.AFTER_TESTS_READ, testCollection);
 
             assert.calledOnce(testCollection.disableAll);
             assert.calledWith(testCollection.enableTest, 'some-title', 'some-browser');
@@ -69,11 +69,11 @@ describe('test filter', () => {
 
         it('should run all tests if input file is empty', async () => {
             utils.readFile.resolves([]);
-            const hermione = mkHermioneStub({isWorker: false});
-            await initHermione(hermione, {inputFile: 'some/path'});
+            const testplane = mkTestplaneStub({isWorker: false});
+            await initTestplane(testplane, {inputFile: 'some/path'});
 
             const testCollection = mkTestCollectionStub();
-            hermione.emit(hermione.events.AFTER_TESTS_READ, testCollection);
+            testplane.emit(testplane.events.AFTER_TESTS_READ, testCollection);
 
             assert.notCalled(testCollection.disableAll);
         });
