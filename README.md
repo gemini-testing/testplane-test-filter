@@ -26,8 +26,18 @@ plugins: {
 ```json
 [
     {
-        "fullTitle": "some-title",
-        "browserId": "some-browser"
+        "fullTitle": "full test title",
+        "browserId": "browser-id"
+    },
+    {
+        "suiteTitle": "suite title (describe block)",
+        "browserId": "browser-id"
+    },
+    {
+        "title": "test title (it block)",
+        "browserId": "browser-id"
     }
 ]
 ```
+
+If multiple fields (`fullTitle`, `suiteTitle`, `title`) are specified for a single entry, `fullTitle` takes precedence, then `suiteTitle`, then `title`.
